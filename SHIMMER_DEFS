@@ -3,15 +3,15 @@
 # This source code is licensed under the BSD-style license found in the LICENSE file in the root
 # directory of this source tree. An additional grant of patent rights can be found in the PATENTS
 # file in the same directory.
-load("//:SHIMMER_DEFS", "SHIMMER_TARGET", "fb_core_android_library")
 
-fb_core_android_library(
-    name = "shimmer",
-    exported_deps = [
-        SHIMMER_TARGET,
-    ],
-    visibility = ["PUBLIC"],
-    deps = [
-        SHIMMER_TARGET,
-    ],
-)
+SHIMMER_ROOT = '//'
+
+def dep(target):
+  return SHIMMER_ROOT + target
+
+SHIMMER_TARGET = dep('shimmer:shimmer')
+SHIMMER_SUPPORT_ANNOTATIONS = dep('lib/support-annotations:support-annotations')
+
+
+def fb_core_android_library(**kwargs):
+  native.android_library(**kwargs)
