@@ -1,10 +1,11 @@
-/**
- * Copyright (c) 2015-present, Facebook, Inc. All rights reserved.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ * All rights reserved.
  *
- * <p>This source code is licensed under the BSD-style license found in the LICENSE file in the root
- * directory of this source tree. An additional grant of patent rights can be found in the PATENTS
- * file in the same directory.
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.shimmer;
 
 import android.animation.ValueAnimator;
@@ -20,8 +21,8 @@ import android.graphics.RadialGradient;
 import android.graphics.Rect;
 import android.graphics.Shader;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public final class ShimmerDrawable extends Drawable {
   private final ValueAnimator.AnimatorUpdateListener mUpdateListener =
@@ -56,6 +57,10 @@ public final class ShimmerDrawable extends Drawable {
     invalidateSelf();
   }
 
+  public @Nullable Shimmer getShimmer() {
+    return mShimmer;
+  }
+
   /** Starts the shimmer animation. */
   public void startShimmer() {
     if (mValueAnimator != null && !isShimmerStarted() && getCallback() != null) {
@@ -78,9 +83,7 @@ public final class ShimmerDrawable extends Drawable {
   @Override
   public void onBoundsChange(Rect bounds) {
     super.onBoundsChange(bounds);
-    final int width = bounds.width();
-    final int height = bounds.height();
-    mDrawRect.set(0, 0, width, height);
+    mDrawRect.set(bounds);
     updateShader();
     maybeStartShimmer();
   }
@@ -162,6 +165,7 @@ public final class ShimmerDrawable extends Drawable {
     mValueAnimator =
         ValueAnimator.ofFloat(0f, 1f + (float) (mShimmer.repeatDelay / mShimmer.animationDuration));
     mValueAnimator.setRepeatMode(mShimmer.repeatMode);
+    mValueAnimator.setStartDelay(mShimmer.startDelay);
     mValueAnimator.setRepeatCount(mShimmer.repeatCount);
     mValueAnimator.setDuration(mShimmer.animationDuration + mShimmer.repeatDelay);
     mValueAnimator.addUpdateListener(mUpdateListener);

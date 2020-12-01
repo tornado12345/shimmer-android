@@ -1,10 +1,11 @@
-/**
- * Copyright (c) 2015-present, Facebook, Inc. All rights reserved.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ * All rights reserved.
  *
- * <p>This source code is licensed under the BSD-style license found in the LICENSE file in the root
- * directory of this source tree. An additional grant of patent rights can be found in the PATENTS
- * file in the same directory.
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.shimmer;
 
 import android.annotation.TargetApi;
@@ -14,10 +15,11 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.FrameLayout;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /**
  * Shimmer is an Android library that provides an easy way to add a shimmer effect to any {@link
@@ -29,6 +31,9 @@ import android.widget.FrameLayout;
 public class ShimmerFrameLayout extends FrameLayout {
   private final Paint mContentPaint = new Paint();
   private final ShimmerDrawable mShimmerDrawable = new ShimmerDrawable();
+
+  private boolean mShowShimmer = true;
+  private boolean mStoppedShimmerBecauseVisibility = false;
 
   public ShimmerFrameLayout(Context context) {
     super(context);
@@ -85,6 +90,10 @@ public class ShimmerFrameLayout extends FrameLayout {
     return this;
   }
 
+  public @Nullable Shimmer getShimmer() {
+    return mShimmerDrawable.getShimmer();
+  }
+
   /** Starts the shimmer animation. */
   public void startShimmer() {
     mShimmerDrawable.startShimmer();
@@ -92,6 +101,7 @@ public class ShimmerFrameLayout extends FrameLayout {
 
   /** Stops the shimmer animation. */
   public void stopShimmer() {
+    mStoppedShimmerBecauseVisibility = false;
     mShimmerDrawable.stopShimmer();
   }
 
@@ -100,12 +110,57 @@ public class ShimmerFrameLayout extends FrameLayout {
     return mShimmerDrawable.isShimmerStarted();
   }
 
+  /**
+   * Sets the ShimmerDrawable to be visible.
+   *
+   * @param startShimmer Whether to start the shimmer again.
+   */
+  public void showShimmer(boolean startShimmer) {
+    mShowShimmer = true;
+    if (startShimmer) {
+      startShimmer();
+    }
+    invalidate();
+  }
+
+  /** Sets the ShimmerDrawable to be invisible, stopping it in the process. */
+  public void hideShimmer() {
+    stopShimmer();
+    mShowShimmer = false;
+    invalidate();
+  }
+
+  /** Return whether the shimmer drawable is visible. */
+  public boolean isShimmerVisible() {
+    return mShowShimmer;
+  }
+
   @Override
   public void onLayout(boolean changed, int left, int top, int right, int bottom) {
     super.onLayout(changed, left, top, right, bottom);
     final int width = getWidth();
     final int height = getHeight();
     mShimmerDrawable.setBounds(0, 0, width, height);
+  }
+
+  @Override
+  protected void onVisibilityChanged(View changedView, int visibility) {
+    super.onVisibilityChanged(changedView, visibility);
+    // View's constructor directly invokes this method, in which case no fields on
+    // this class have been fully initialized yet.
+    if (mShimmerDrawable == null) {
+      return;
+    }
+    if (visibility != View.VISIBLE) {
+      // GONE or INVISIBLE
+      if (isShimmerStarted()) {
+        stopShimmer();
+        mStoppedShimmerBecauseVisibility = true;
+      }
+    } else if (mStoppedShimmerBecauseVisibility) {
+      mShimmerDrawable.maybeStartShimmer();
+      mStoppedShimmerBecauseVisibility = false;
+    }
   }
 
   @Override
@@ -123,7 +178,9 @@ public class ShimmerFrameLayout extends FrameLayout {
   @Override
   public void dispatchDraw(Canvas canvas) {
     super.dispatchDraw(canvas);
-    mShimmerDrawable.draw(canvas);
+    if (mShowShimmer) {
+      mShimmerDrawable.draw(canvas);
+    }
   }
 
   @Override

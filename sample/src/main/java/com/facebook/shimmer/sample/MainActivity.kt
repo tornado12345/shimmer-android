@@ -1,14 +1,9 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates. All Rights Reserved.
- * This file provided by Facebook is for non-commercial testing and evaluation purposes only.
- * Facebook reserves all rights not expressly granted.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ * All rights reserved.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
- * FACEBOOK BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree.
  */
 
 package com.facebook.shimmer.sample
@@ -33,14 +28,14 @@ class MainActivity : Activity(), View.OnClickListener {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.main)
     shimmerViewContainer = shimmer_view_container
-    presetButtons = arrayOf(
-        preset_button0,
-        preset_button1,
-        preset_button2,
-        preset_button3,
-        preset_button4,
-        preset_button5
-    )
+    presetButtons =
+        arrayOf(
+            preset_button0,
+            preset_button1,
+            preset_button2,
+            preset_button3,
+            preset_button4,
+            preset_button5)
     presetButtons.forEach { it.setOnClickListener(this@MainActivity) }
     selectPreset(0, false)
   }
@@ -90,12 +85,12 @@ class MainActivity : Activity(), View.OnClickListener {
             // Sweep angle 90
             toast = Toast.makeText(this, "Sweep angle 90", Toast.LENGTH_SHORT)
             shimmerBuilder.setDirection(Shimmer.Direction.TOP_TO_BOTTOM).setTilt(0f)
-
           }
           4 -> {
             // Spotlight
             toast = Toast.makeText(this, "Spotlight", Toast.LENGTH_SHORT)
-            shimmerBuilder.setBaseAlpha(0f)
+            shimmerBuilder
+                .setBaseAlpha(0f)
                 .setDuration(2000L)
                 .setDropoff(0.1f)
                 .setIntensity(0.35f)
@@ -110,8 +105,7 @@ class MainActivity : Activity(), View.OnClickListener {
             toast = Toast.makeText(this, "Default", Toast.LENGTH_SHORT)
             shimmerBuilder
           }
-        }?.build()
-    )
+        }?.build())
 
     // Show toast describing the chosen preset, if necessary
     if (showToast) {

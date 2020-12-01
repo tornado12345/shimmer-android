@@ -1,10 +1,11 @@
-/**
- * Copyright (c) 2015-present, Facebook, Inc. All rights reserved.
+/*
+ * Copyright (c) Facebook, Inc. and its affiliates.
+ * All rights reserved.
  *
- * <p>This source code is licensed under the BSD-style license found in the LICENSE file in the root
- * directory of this source tree. An additional grant of patent rights can be found in the PATENTS
- * file in the same directory.
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree.
  */
+
 package com.facebook.shimmer;
 
 import android.animation.ValueAnimator;
@@ -12,11 +13,11 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.RectF;
-import android.support.annotation.ColorInt;
-import android.support.annotation.FloatRange;
-import android.support.annotation.IntDef;
-import android.support.annotation.Px;
 import android.util.AttributeSet;
+import androidx.annotation.ColorInt;
+import androidx.annotation.FloatRange;
+import androidx.annotation.IntDef;
+import androidx.annotation.Px;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -77,6 +78,7 @@ public class Shimmer {
   int repeatMode = ValueAnimator.RESTART;
   long animationDuration = 1000L;
   long repeatDelay;
+  long startDelay;
 
   Shimmer() {}
 
@@ -178,7 +180,11 @@ public class Shimmer {
         setRepeatMode(
             a.getInt(R.styleable.ShimmerFrameLayout_shimmer_repeat_mode, mShimmer.repeatMode));
       }
-
+      if (a.hasValue(R.styleable.ShimmerFrameLayout_shimmer_start_delay)) {
+        setStartDelay(
+            a.getInt(
+                R.styleable.ShimmerFrameLayout_shimmer_start_delay, (int) mShimmer.startDelay));
+      }
       if (a.hasValue(R.styleable.ShimmerFrameLayout_shimmer_direction)) {
         int direction =
             a.getInt(R.styleable.ShimmerFrameLayout_shimmer_direction, mShimmer.direction);
@@ -259,6 +265,7 @@ public class Shimmer {
       setRepeatCount(other.repeatCount);
       setRepeatMode(other.repeatMode);
       setRepeatDelay(other.repeatDelay);
+      setStartDelay(other.startDelay);
       setDuration(other.animationDuration);
       mShimmer.baseColor = other.baseColor;
       mShimmer.highlightColor = other.highlightColor;
@@ -395,6 +402,15 @@ public class Shimmer {
         throw new IllegalArgumentException("Given a negative repeat delay: " + millis);
       }
       mShimmer.repeatDelay = millis;
+      return getThis();
+    }
+
+    /** Sets how long to wait for starting the shimmering animation. */
+    public T setStartDelay(long millis) {
+      if (millis < 0) {
+        throw new IllegalArgumentException("Given a negative start delay: " + millis);
+      }
+      mShimmer.startDelay = millis;
       return getThis();
     }
 
